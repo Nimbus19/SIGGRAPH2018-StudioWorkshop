@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEditor.Experimental.AssetImporters;
+
 using UnityEditor.ShaderGraph.Drawing;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ namespace UnityEditor.ShaderGraph
 {
 
     [CustomEditor(typeof(ShaderGraphImporter))]
-    public class ShaderGraphImporterEditor : ScriptedImporterEditor
+    public class ShaderGraphImporterEditor : UnityEditor.AssetImporters.ScriptedImporterEditor
     {
         public override void OnInspectorGUI()
         {

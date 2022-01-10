@@ -395,7 +395,7 @@ namespace UnityEditor.ShaderGraph.Drawing
                                 }
                             }
                             Debug.LogWarning(message.ToString());
-                            ShaderUtil.ClearShaderErrors(m_ColorShader);
+                            ShaderUtil.ClearShaderMessages(m_ColorShader);
                             ShaderUtil.UpdateShaderAsset(m_ColorShader, k_EmptyShader);
                             uberShaderHasError = true;
                         }
@@ -487,7 +487,7 @@ namespace UnityEditor.ShaderGraph.Drawing
             {
                 if (shaderData.shader != null)
                 {
-                    ShaderUtil.ClearShaderErrors(shaderData.shader);
+                    ShaderUtil.ClearShaderMessages(shaderData.shader);
                     Object.DestroyImmediate(shaderData.shader, true);
                     shaderData.shader = null;
                 }
@@ -501,7 +501,7 @@ namespace UnityEditor.ShaderGraph.Drawing
             }
             else
             {
-                ShaderUtil.ClearShaderErrors(shaderData.shader);
+                ShaderUtil.ClearShaderMessages(shaderData.shader);
                 ShaderUtil.UpdateShaderAsset(shaderData.shader, shaderData.shaderString);
             }
 
@@ -517,7 +517,7 @@ namespace UnityEditor.ShaderGraph.Drawing
                     var message = "RecreateShader: " + node.GetVariableNameForNode() + Environment.NewLine + shaderData.shaderString;
                     Debug.LogWarning(message);
                 }
-                ShaderUtil.ClearShaderErrors(shaderData.shader);
+                ShaderUtil.ClearShaderMessages(shaderData.shader);
                 Object.DestroyImmediate(shaderData.shader, true);
                 shaderData.shader = null;
             }

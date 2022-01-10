@@ -1,15 +1,15 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.AssetImporters;
+
 using UnityEditor.ShaderGraph;
 using UnityEngine;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-[ScriptedImporter(2, "ShaderSubGraph")]
-public class ShaderSubGraphImporter : ScriptedImporter
+[UnityEditor.AssetImporters.ScriptedImporter(2, "ShaderSubGraph")]
+public class ShaderSubGraphImporter : UnityEditor.AssetImporters.ScriptedImporter
 {
-    public override void OnImportAsset(AssetImportContext ctx)
+    public override void OnImportAsset(UnityEditor.AssetImporters.AssetImportContext ctx)
     {
         var textGraph = File.ReadAllText(ctx.assetPath, Encoding.UTF8);
         var graph = JsonUtility.FromJson<SubGraph>(textGraph);

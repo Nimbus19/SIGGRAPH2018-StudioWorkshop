@@ -6,13 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
-using UnityEditor.Experimental.AssetImporters;
+
 using UnityEditor.ShaderGraph.Drawing;
 
 namespace UnityEditor.ShaderGraph
 {
-    [ScriptedImporter(17, ShaderGraphExtension)]
-    public class ShaderGraphImporter : ScriptedImporter
+    [UnityEditor.AssetImporters.ScriptedImporter(17, ShaderGraphExtension)]
+    public class ShaderGraphImporter : UnityEditor.AssetImporters.ScriptedImporter
     {
         public const string ShaderGraphExtension = "shadergraph";
 
@@ -58,11 +58,11 @@ Shader ""Hidden/GraphErrorShader2""
     Fallback Off
 }";
 
-        public override void OnImportAsset(AssetImportContext ctx)
+        public override void OnImportAsset(UnityEditor.AssetImporters.AssetImportContext ctx)
         {
             var oldShader = AssetDatabase.LoadAssetAtPath<Shader>(ctx.assetPath);
             if (oldShader != null)
-                ShaderUtil.ClearShaderErrors(oldShader);
+                ShaderUtil.ClearShaderMessages(oldShader);
 
             List<PropertyCollector.TextureInfo> configuredTextures;
             string path = ctx.assetPath;
