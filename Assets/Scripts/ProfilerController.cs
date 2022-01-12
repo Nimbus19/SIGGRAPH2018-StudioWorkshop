@@ -6,10 +6,12 @@ using Unity.Profiling.LowLevel.Unsafe;
 using UnityEngine;
 
 public class ProfilerController : MonoBehaviour
-{
-    string statsText;    
-    bool show = true;
+{ 
+    bool showDetail = true;
     int fontSize = 24;
+    List<Rect> locations = new List<Rect>();
+
+    string statsText;
 
     // Internal
     ProfilerRecorder mainThreadTimeRecorder;
@@ -18,82 +20,13 @@ public class ProfilerController : MonoBehaviour
 
     // Memory
     ProfilerRecorder systemMemoryRecorder;
-    ProfilerRecorder gcMemoryRecorder;
+    ProfilerRecorder gcMemoryRecorder;  
     ProfilerRecorder gfxMemoryRecorder;    
 
     // Render
     ProfilerRecorder drawCallsCountRecorder;
     ProfilerRecorder setPassCallsCountRecorder;
     ProfilerRecorder verticesCountRecorder;        
-
-    void OnEnable()
-    {
-        mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 15);
-        vSyncWaitForFPSRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Gfx.WaitForPresentOnGfxThread", 15);
-        gfxPresentFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Gfx.PresentFrame", 15);
-        systemMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
-        gcMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Reserved Memory");
-        gfxMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Gfx Used Memory");
-        drawCallsCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
-        setPassCallsCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "SetPass Calls Count");
-        verticesCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Vertices Count");
-
-        //EnumerateProfilerStats();
-    }
-
-    void OnDisable()
-    {
-        mainThreadTimeRecorder.Dispose();
-        vSyncWaitForFPSRecorder.Dispose();
-        gfxPresentFrameRecorder.Dispose();
-        systemMemoryRecorder.Dispose();
-        gcMemoryRecorder.Dispose();
-        gfxMemoryRecorder.Dispose();
-        drawCallsCountRecorder.Dispose();
-        setPassCallsCountRecorder.Dispose();
-        verticesCountRecorder.Dispose();
-    }
-
-    void Update()
-    {
-        var sb = new StringBuilder(500);
-        sb.AppendLine($"Frame Time: {GetRecorderFrameAverage(mainThreadTimeRecorder) * (1e-6f):F1} ms");
-        sb.AppendLine($"vSync Time: {GetRecorderFrameAverage(vSyncWaitForFPSRecorder) * (1e-6f):F1} ms");
-        sb.AppendLine($"GPU Time: {GetRecorderFrameAverage(gfxPresentFrameRecorder) * (1e-6f):F1} ms");
-        sb.AppendLine($"GC Memory: {gcMemoryRecorder.LastValue / (1024 * 1024)} MB");
-        sb.AppendLine($"System Memory: {systemMemoryRecorder.LastValue / (1024 * 1024)} MB");
-        sb.AppendLine($"GFX Memory: {gfxMemoryRecorder.LastValue / (1024 * 1024)} MB");
-        sb.AppendLine($"Draw Calls: {drawCallsCountRecorder.LastValue}");
-        sb.AppendLine($"SetPass Calls: {setPassCallsCountRecorder.LastValue}");
-        sb.AppendLine($"Vertices: {verticesCountRecorder.LastValue}");
-
-        statsText = sb.ToString();
-    }
-
-    void OnGUI()
-    {
-        fontSize = Screen.width / 50;
-        GUI.skin.button.fontSize = fontSize;
-        GUI.skin.textArea.fontSize = fontSize;
-
-        if (GUI.Button(new Rect(10, 30, fontSize * 12, fontSize * 1.5f), "Profiler", GUI.skin.button))
-        {
-            show = !show;
-        }
-
-        if (show)
-        {
-            GUI.TextArea(new Rect(10, fontSize * 2 + 30, fontSize * 12, fontSize * 15), statsText, 200, GUI.skin.textArea);
-        }
-    
-    }
-
-    internal struct StatInfo
-    {
-        public ProfilerCategory Cat;
-        public string Name;
-        public ProfilerMarkerDataUnit Unit;
-    }
 
     static private double GetRecorderFrameAverage(ProfilerRecorder recorder)
     {
@@ -111,6 +44,13 @@ public class ProfilerController : MonoBehaviour
 
 
         return r;
+    }
+
+    internal struct StatInfo
+    {
+        public ProfilerCategory Cat;
+        public string Name;
+        public ProfilerMarkerDataUnit Unit;
     }
 
     static private void EnumerateProfilerStats()
@@ -148,4 +88,73 @@ public class ProfilerController : MonoBehaviour
         Debug.Log(sb.ToString());
         //File.WriteAllText("ProfilerStats.txt", sb.ToString());
     }
+
+    void OnEnable()
+    {
+        mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 15);
+        vSyncWaitForFPSRecorder = ProfilerRecorder.StartNew(new ProfilerCategory("VSync"), "WaitForTargetFPS", 15);
+        gfxPresentFrameRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Gfx.PresentFrame", 15);
+        systemMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "System Used Memory");
+        gcMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Reserved Memory");
+        gfxMemoryRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "Gfx Used Memory");
+        drawCallsCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Draw Calls Count");
+        setPassCallsCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "SetPass Calls Count");
+        verticesCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Vertices Count");
+
+        EnumerateProfilerStats();
+    }
+
+    void OnDisable()
+    {
+        mainThreadTimeRecorder.Dispose();
+        vSyncWaitForFPSRecorder.Dispose();
+        gfxPresentFrameRecorder.Dispose();
+        systemMemoryRecorder.Dispose();
+        gcMemoryRecorder.Dispose();
+        gfxMemoryRecorder.Dispose();
+        drawCallsCountRecorder.Dispose();
+        setPassCallsCountRecorder.Dispose();
+        verticesCountRecorder.Dispose();
+    }
+
+    void Update()
+    {
+        var sb = new StringBuilder(500);
+        sb.AppendLine($"Frame Time: {GetRecorderFrameAverage(mainThreadTimeRecorder) * (1e-6f):F1} ms");
+        sb.AppendLine($"vSync Time: {GetRecorderFrameAverage(vSyncWaitForFPSRecorder) * (1e-6f):F1} ms");
+        sb.AppendLine($"GPU Present Time: {GetRecorderFrameAverage(gfxPresentFrameRecorder) * (1e-6f):F1} ms");
+        sb.AppendLine($"GC Memory: {gcMemoryRecorder.LastValue / (1024 * 1024)} MB");
+        sb.AppendLine($"System Memory: {systemMemoryRecorder.LastValue / (1024 * 1024)} MB");
+        sb.AppendLine($"GFX Memory: {gfxMemoryRecorder.LastValue / (1024 * 1024)} MB");
+        sb.AppendLine($"Draw Calls: {drawCallsCountRecorder.LastValue}");
+        sb.AppendLine($"SetPass Calls: {setPassCallsCountRecorder.LastValue}");
+        sb.AppendLine($"Vertices: {verticesCountRecorder.LastValue}");
+
+        statsText = sb.ToString();
+    }
+
+    void Start()
+    {
+        fontSize = Screen.width / 50;
+        locations.Add(new Rect(10, 30, fontSize * 12, fontSize * 1.5f));
+        locations.Add(new Rect(10, fontSize * 1.5f + 30, fontSize * 12, fontSize * 15));
+    }
+
+    void OnGUI()
+    {
+        GUI.skin.button.fontSize = fontSize;
+        GUI.skin.textArea.fontSize = fontSize;
+
+        if (GUI.Button(locations[0], "Profiler", GUI.skin.button))
+        {
+            showDetail = !showDetail;
+        }
+
+        if (showDetail)
+        {
+            GUI.TextArea(locations[1], statsText, 200, GUI.skin.textArea);
+        }
+
+    }
+
 }
