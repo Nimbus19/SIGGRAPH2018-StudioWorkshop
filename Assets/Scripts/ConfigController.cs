@@ -6,7 +6,9 @@ public class ConfigController : MonoBehaviour
 {
     bool showDetail = false;
     int fontSize = 24;
-    List<Rect> locations = new List<Rect>();
+    readonly List<Rect> locations = new List<Rect>();
+
+    int fpsSelIndex = 0;
 
     void Start()
     {
@@ -17,17 +19,10 @@ public class ConfigController : MonoBehaviour
         locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
         yAnchor += fontSize * 1.5f + 10;
         locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
-        yAnchor += fontSize * 1.5f + 10;
-        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
-        yAnchor += fontSize * 1.5f + 10;
-        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
-        yAnchor += fontSize * 1.5f + 10;
-        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
     }
 
     void OnGUI()
     {
-        fontSize = Screen.width / 50;
         GUI.skin.button.fontSize = fontSize;
         GUI.skin.textArea.fontSize = fontSize;
 
@@ -38,23 +33,29 @@ public class ConfigController : MonoBehaviour
 
         if (showDetail)
         {
-            if (GUI.Button(locations[1], "FPS 60", GUI.skin.button))
+            string[] selStrings = new string[] { "FPS", "60", "30", "10" };
+            switch (GUI.SelectionGrid(locations[1], fpsSelIndex, selStrings, 4))
             {
-                QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = 60;
+                case 1:
+                    QualitySettings.vSyncCount = 0;
+                    Application.targetFrameRate = 60;
+                    fpsSelIndex = 1;
+                    break;
+                case 2:
+                    QualitySettings.vSyncCount = 0;
+                    Application.targetFrameRate = 30;
+                    fpsSelIndex = 2;
+                    break;
+                case 3:
+                    QualitySettings.vSyncCount = 0;
+                    Application.targetFrameRate = 10;
+                    fpsSelIndex = 3;
+                    break;
+                default:
+                    break;
             }
 
-            if (GUI.Button(locations[2], "FPS 30", GUI.skin.button))
-            {
-                QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = 30;
-            }
-
-            if (GUI.Button(locations[3], "FPS 10", GUI.skin.button))
-            {
-                QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = 10;
-            }
+            
         }
 
     }

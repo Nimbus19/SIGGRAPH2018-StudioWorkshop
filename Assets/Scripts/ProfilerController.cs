@@ -26,25 +26,7 @@ public class ProfilerController : MonoBehaviour
     // Render
     ProfilerRecorder drawCallsCountRecorder;
     ProfilerRecorder setPassCallsCountRecorder;
-    ProfilerRecorder verticesCountRecorder;        
-
-    static private double GetRecorderFrameAverage(ProfilerRecorder recorder)
-    {
-        var samplesCount = recorder.Capacity;
-        if (samplesCount == 0)
-            return 0;
-
-        double r = 0;
-
-        var samples = new List<ProfilerRecorderSample>(samplesCount);
-        recorder.CopyTo(samples);
-        for (var i = 0; i < samples.Count; ++i)
-            r += samples[i].Value;
-        r /= samplesCount;
-
-
-        return r;
-    }
+    ProfilerRecorder verticesCountRecorder;
 
     internal struct StatInfo
     {
@@ -89,6 +71,23 @@ public class ProfilerController : MonoBehaviour
         //File.WriteAllText("ProfilerStats.txt", sb.ToString());
     }
 
+    private double GetRecorderFrameAverage(ProfilerRecorder recorder)
+    {
+        var samplesCount = recorder.Capacity;
+        if (samplesCount == 0)
+            return 0;
+
+        double r = 0;
+
+        var samples = new List<ProfilerRecorderSample>(samplesCount);
+        recorder.CopyTo(samples);
+        for (var i = 0; i < samples.Count; ++i)
+            r += samples[i].Value;
+        r /= samplesCount;
+
+        return r;
+    }    
+
     void OnEnable()
     {
         mainThreadTimeRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Internal, "Main Thread", 15);
@@ -101,7 +100,7 @@ public class ProfilerController : MonoBehaviour
         setPassCallsCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "SetPass Calls Count");
         verticesCountRecorder = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Vertices Count");
 
-        EnumerateProfilerStats();
+        //EnumerateProfilerStats();
     }
 
     void OnDisable()
@@ -122,7 +121,7 @@ public class ProfilerController : MonoBehaviour
         var sb = new StringBuilder(500);
         sb.AppendLine($"Frame Time: {GetRecorderFrameAverage(mainThreadTimeRecorder) * (1e-6f):F1} ms");
         sb.AppendLine($"vSync Time: {GetRecorderFrameAverage(vSyncWaitForFPSRecorder) * (1e-6f):F1} ms");
-        sb.AppendLine($"GPU Present Time: {GetRecorderFrameAverage(gfxPresentFrameRecorder) * (1e-6f):F1} ms");
+        sb.AppendLine($"Present Time: {GetRecorderFrameAverage(gfxPresentFrameRecorder) * (1e-6f):F1} ms");
         sb.AppendLine($"GC Memory: {gcMemoryRecorder.LastValue / (1024 * 1024)} MB");
         sb.AppendLine($"System Memory: {systemMemoryRecorder.LastValue / (1024 * 1024)} MB");
         sb.AppendLine($"GFX Memory: {gfxMemoryRecorder.LastValue / (1024 * 1024)} MB");
