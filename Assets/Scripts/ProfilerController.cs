@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class ProfilerController : MonoBehaviour
 { 
-    bool showDetail = true;
+    bool showMenu = true;
     int fontSize = 24;
     List<Rect> locations = new List<Rect>();
 
@@ -146,10 +146,10 @@ public class ProfilerController : MonoBehaviour
 
         if (GUI.Button(locations[0], "Profiler", GUI.skin.button))
         {
-            showDetail = !showDetail;
+            showMenu = !showMenu;
         }
 
-        if (showDetail)
+        if (showMenu)
         {
             GUI.TextArea(locations[1], statsText, 200, GUI.skin.textArea);
         }

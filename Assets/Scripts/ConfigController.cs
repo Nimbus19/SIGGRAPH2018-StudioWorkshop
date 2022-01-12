@@ -1,16 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class ConfigController : MonoBehaviour
 {
-    bool showDetail = false;
+    bool showMenu = false;
+    bool showSysInfo = false;
     int fontSize = 24;
-    readonly List<Rect> locations = new List<Rect>();
-
     int fpsSelIndex = 0;
+    string sysInfo;
+    readonly List<Rect> locations = new List<Rect>();    
+
+    void OnEnable()
+    {
+
+    }
 
     void Start()
+    {        
+        setUILoactions();
+        getSystemInfo();
+
+    }
+
+    private void setUILoactions()
     {
         fontSize = Screen.width / 50;
 
@@ -19,7 +33,30 @@ public class ConfigController : MonoBehaviour
         locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
         yAnchor += fontSize * 1.5f + 10;
         locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+        yAnchor += fontSize * 1.5f + 10;
+        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+        locations.Add(new Rect(fontSize * 15, 30, fontSize * 20, fontSize * 20));
     }
+
+    private void getSystemInfo()
+    {
+        var sb = new StringBuilder(500);
+        sb.AppendLine($"Device: {SystemInfo.deviceName}");
+        sb.AppendLine($"OS: {SystemInfo.operatingSystem}");        
+        sb.AppendLine($"CPU: {SystemInfo.processorType}");
+        sb.AppendLine($"GPU: {SystemInfo.graphicsDeviceVendor} {SystemInfo.graphicsDeviceName}");
+        sb.AppendLine($"GPU Memory: {SystemInfo.graphicsMemorySize} MB");
+        sb.AppendLine($"GPU API: {SystemInfo.graphicsDeviceVersion}");
+        sb.AppendLine($"GPU Multi-Threaded: {SystemInfo.graphicsMultiThreaded}");
+        sb.AppendLine($"GPU Shader Level: {SystemInfo.graphicsShaderLevel}");
+
+        Resolution[] resolutions = Screen.resolutions;
+        var res = resolutions[resolutions.Length - 1];
+        sb.AppendLine($"Res: {res.width}x{res.height}@{res.refreshRate}");
+
+        sysInfo = sb.ToString();
+    }
+    
 
     void OnGUI()
     {
@@ -28,13 +65,13 @@ public class ConfigController : MonoBehaviour
 
         if (GUI.Button(locations[0], "Config", GUI.skin.button))
         {
-            showDetail = !showDetail;
+            showMenu = !showMenu;
         }
 
-        if (showDetail)
+        if (showMenu)
         {
             string[] selStrings = new string[] { "FPS", "60", "30", "10" };
-            switch (GUI.SelectionGrid(locations[1], fpsSelIndex, selStrings, 4))
+            switch (GUI.SelectionGrid(locations[1], fpsSelIndex, selStrings, 4, GUI.skin.button))
             {
                 case 1:
                     QualitySettings.vSyncCount = 0;
@@ -55,7 +92,17 @@ public class ConfigController : MonoBehaviour
                     break;
             }
 
-            
+
+            if (GUI.Button(locations[2], "SysInfo", GUI.skin.button))
+            {
+                showSysInfo = !showSysInfo;                
+            }
+
+            if (showSysInfo)
+            {
+                GUI.TextArea(locations[3], sysInfo, 500, GUI.skin.textArea);
+            }
+
         }
 
     }
