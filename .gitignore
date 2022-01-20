@@ -72,9 +72,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # WebGL build data
-/*/Build
-/*/TemplateData
+/App/*/Build
+/App/*/TemplateData
 
 # NodeJS dependency
-/*/node_modules
-/*/package-lock.json
+/App/*/node_modules
+/App/*/package-lock.json
