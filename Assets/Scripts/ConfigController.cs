@@ -35,6 +35,9 @@ public class ConfigController : MonoBehaviour
         locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
         yAnchor += fontSize * 1.5f + 10;
         locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+        yAnchor += fontSize * 1.5f + 10;
+        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+
         locations.Add(new Rect(fontSize * 15, 30, fontSize * 20, fontSize * 20));
     }
 
@@ -53,6 +56,7 @@ public class ConfigController : MonoBehaviour
         Resolution[] resolutions = Screen.resolutions;
         var res = resolutions[resolutions.Length - 1];
         sb.AppendLine($"Res: {res.width}x{res.height}@{res.refreshRate}");
+        sb.AppendLine($"Window: {Screen.width}x{Screen.height}");
 
         sysInfo = sb.ToString();
     }
@@ -89,18 +93,25 @@ public class ConfigController : MonoBehaviour
                     fpsSelIndex = 3;
                     break;
                 default:
+                    QualitySettings.vSyncCount = 1;
+                    Application.targetFrameRate = -1;
+                    fpsSelIndex = 0;
                     break;
             }
 
+            if (GUI.Button(locations[2], "Fullscreen", GUI.skin.button))
+            {
+                Screen.fullScreen = !Screen.fullScreen;
+            }
 
-            if (GUI.Button(locations[2], "SysInfo", GUI.skin.button))
+            if (GUI.Button(locations[locations.Count - 2], "SysInfo", GUI.skin.button))
             {
                 showSysInfo = !showSysInfo;                
             }
 
             if (showSysInfo)
             {
-                GUI.TextArea(locations[3], sysInfo, 500, GUI.skin.textArea);
+                GUI.TextArea(locations[locations.Count - 1], sysInfo, 500, GUI.skin.textArea);
             }
 
         }
