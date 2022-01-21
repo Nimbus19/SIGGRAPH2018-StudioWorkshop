@@ -111,7 +111,7 @@ public class ConfigController : MonoBehaviour
 
             if (showSysInfo)
             {
-                GUI.TextArea(locations[locations.Count - 1], sysInfo, 500, GUI.skin.textArea);
+                GUI.Label(locations[locations.Count - 1], sysInfo, GUI.skin.textArea);
             }
 
         }

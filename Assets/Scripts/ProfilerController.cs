@@ -151,7 +151,7 @@ public class ProfilerController : MonoBehaviour
 
         if (showMenu)
         {
-            GUI.TextArea(locations[1], statsText, 200, GUI.skin.textArea);
+            GUI.Label(locations[1], statsText, GUI.skin.textArea);
         }
 
     }
