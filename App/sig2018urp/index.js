@@ -6,7 +6,17 @@ app.get("/", (req, res) => {
     res.sendFile(join(__dirname, "index.html"));
     });
 
+app.get("/TemplateData/*.gz", (req, res) => {
+    res.setHeader('Content-Encoding', 'gzip')
+    res.sendFile(join(__dirname, req.url));
+    });
+
 app.get("/TemplateData/*", (req, res) => {
+    res.sendFile(join(__dirname, req.url));
+    });
+
+app.get("/Build/*.gz", (req, res) => {
+    res.setHeader('Content-Encoding', 'gzip')
     res.sendFile(join(__dirname, req.url));
     });
 

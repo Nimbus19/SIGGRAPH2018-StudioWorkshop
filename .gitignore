@@ -60,6 +60,7 @@ sysinfo.txt
 *.aab
 *.unitypackage
 *.app
+/App/*
 
 # Crashlytics generated file
 crashlytics-build.properties
@@ -71,10 +72,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# WebGL build data
-/App/*/Build
-/App/*/TemplateData
 
-# NodeJS dependency
-/App/*/node_modules
-/App/*/package-lock.json
+# Exclude NodeJS 
+！/App/*/index.js
+！/App/*/package.json
+
