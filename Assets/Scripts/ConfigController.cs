@@ -10,7 +10,7 @@ public class ConfigController : MonoBehaviour
     int fontSize = 24;
     int fpsSelIndex = 0;
     string sysInfo;
-    readonly List<Rect> locations = new List<Rect>();    
+    readonly Dictionary<string, Rect> locations = new Dictionary<string, Rect>();
 
     void OnEnable()
     {
@@ -18,7 +18,7 @@ public class ConfigController : MonoBehaviour
     }
 
     void Start()
-    {        
+    {
         setUILoactions();
         getSystemInfo();
 
@@ -30,22 +30,25 @@ public class ConfigController : MonoBehaviour
 
         float xAnchor = Screen.width - fontSize * 12 - 10;
         float yAnchor = 30;
-        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
-        yAnchor += fontSize * 1.5f + 10;
-        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
-        yAnchor += fontSize * 1.5f + 10;
-        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
-        yAnchor += fontSize * 1.5f + 10;
-        locations.Add(new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
 
-        locations.Add(new Rect(fontSize * 15, 30, fontSize * 20, fontSize * 20));
+        locations.Add("Config", new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+        yAnchor += fontSize * 1.5f + 10;
+
+        locations.Add("FPS", new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+        yAnchor += fontSize * 1.5f + 10;
+
+        locations.Add("Fullscreen", new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+        yAnchor += fontSize * 1.5f + 10;
+
+        locations.Add("SysInfo", new Rect(xAnchor, yAnchor, fontSize * 12, fontSize * 1.5f));
+        locations.Add("SysInfoDetail", new Rect(fontSize * 15, 30, fontSize * 20, fontSize * 20));
     }
 
     private void getSystemInfo()
     {
         var sb = new StringBuilder(500);
         sb.AppendLine($"Device: {SystemInfo.deviceName}");
-        sb.AppendLine($"OS: {SystemInfo.operatingSystem}");        
+        sb.AppendLine($"OS: {SystemInfo.operatingSystem}");
         sb.AppendLine($"CPU: {SystemInfo.processorType}");
         sb.AppendLine($"GPU: {SystemInfo.graphicsDeviceVendor} {SystemInfo.graphicsDeviceName}");
         sb.AppendLine($"GPU Memory: {SystemInfo.graphicsMemorySize} MB");
@@ -60,14 +63,14 @@ public class ConfigController : MonoBehaviour
 
         sysInfo = sb.ToString();
     }
-    
+
 
     void OnGUI()
     {
         GUI.skin.button.fontSize = fontSize;
         GUI.skin.textArea.fontSize = fontSize;
 
-        if (GUI.Button(locations[0], "Config", GUI.skin.button))
+        if (GUI.Button(locations["Config"], "Config", GUI.skin.button))
         {
             showMenu = !showMenu;
         }
@@ -75,7 +78,7 @@ public class ConfigController : MonoBehaviour
         if (showMenu)
         {
             string[] selStrings = new string[] { "FPS", "60", "30", "10" };
-            switch (GUI.SelectionGrid(locations[1], fpsSelIndex, selStrings, 4, GUI.skin.button))
+            switch (GUI.SelectionGrid(locations["FPS"], fpsSelIndex, selStrings, 4, GUI.skin.button))
             {
                 case 1:
                     QualitySettings.vSyncCount = 0;
@@ -99,19 +102,19 @@ public class ConfigController : MonoBehaviour
                     break;
             }
 
-            if (GUI.Button(locations[2], "Fullscreen", GUI.skin.button))
+            if (GUI.Button(locations["Fullscreen"], "Fullscreen", GUI.skin.button))
             {
                 Screen.fullScreen = !Screen.fullScreen;
             }
 
-            if (GUI.Button(locations[locations.Count - 2], "SysInfo", GUI.skin.button))
+            if (GUI.Button(locations["SysInfo"], "SysInfo", GUI.skin.button))
             {
-                showSysInfo = !showSysInfo;                
+                showSysInfo = !showSysInfo;
             }
 
             if (showSysInfo)
             {
-                GUI.Label(locations[locations.Count - 1], sysInfo, GUI.skin.textArea);
+                GUI.Label(locations["SysInfoDetail"], sysInfo, GUI.skin.textArea);
             }
 
         }
